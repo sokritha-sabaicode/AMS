@@ -25,8 +25,17 @@ const isAuthenticated = async (req, res, next) => {
     req.userId = userRecord.uid;
     next();
   } catch (err) {
-    console.log("err", err);
-    if (err.errorInfo.code === "auth/user-not-found") {
+    console.log("err", err.name);
+    // Check if the error is TokenExpiredError
+    if (err.name && err.name === "TokenExpiredError") {
+      const error = transferError(
+        STATUS_CODE.UNAUTHORIZED, // Use an appropriate status code
+        "Your session has expired. Please login again."
+      );
+      return next(new Error(error));
+    }
+
+    if (err.errorInfo && err.errorInfo.code === "auth/user-not-found") {
       const err = transferError(STATUS_CODE.NOT_FOUND, `User does not exist!`);
       return next(new Error(err));
     }
@@ -52,7 +61,7 @@ const getUserDetailFromDBByUID = async (uid) => {
   }
 };
 
-const requireRole = (role) => {
+const requireRole = (roles) => {
   return async (req, res, next) => {
     try {
       const authenticatedUser = await getUserDetailFromDBByUID(req.userId);
