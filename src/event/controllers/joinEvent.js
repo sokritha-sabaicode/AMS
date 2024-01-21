@@ -21,10 +21,19 @@ module.exports = async (req, res, next) => {
     }
 
     // Validate the Code
-    if (foundEvent.code !== givenCode) {
+    if (foundEvent.code !== givenCode.code) {
       const error = transferError(
         STATUS_CODE.NOT_FOUND,
         "Code is not correct!"
+      );
+      return next(new Error(error));
+    }
+
+    // Check if the user is already a participant
+    if (foundEvent.participants.includes(participant._id)) {
+      const error = transferError(
+        STATUS_CODE.BAD_REQUEST,
+        "You are already a participant in this event"
       );
       return next(new Error(error));
     }
