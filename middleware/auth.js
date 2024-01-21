@@ -8,7 +8,6 @@ const UserModel = require("../src/auth/models/user.model");
 const isAuthenticated = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-
     if (!token) {
       const error = transferError(
         STATUS_CODE.NOT_AUTHORIZED,
@@ -65,6 +64,7 @@ const requireRole = (roles) => {
   return async (req, res, next) => {
     try {
       const authenticatedUser = await getUserDetailFromDBByUID(req.userId);
+
       if (roles.includes(authenticatedUser.role)) {
         next();
       } else {

@@ -25,17 +25,18 @@ const router = express.Router();
 // Permission:
 // 1. Host: CRUD Events
 // 2. Participant: Get Event
+router.get("/", isAuthenticated, requireRole([USER_TYPE.HOST]), getAllEvents);
 router.post(
   "/",
   isAuthenticated,
-  requireRole([ USER_TYPE.HOST]),
+  requireRole([USER_TYPE.HOST]),
   validateInput(eventCreationSchema),
   createEvent
 );
 router.get(
   "/:id",
   isAuthenticated,
-  requireRole([ USER_TYPE.HOST, USER_TYPE.PARTICIPANT]),
+  requireRole([USER_TYPE.HOST, USER_TYPE.PARTICIPANT]),
   getEvent
 );
 router.patch("/:id", validateInput(eventUpdatingSchema), updateEvent);
