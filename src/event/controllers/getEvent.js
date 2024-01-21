@@ -3,10 +3,12 @@ const { transferError } = require("../../../utils/error");
 const { STATUS_CODE } = require("../../../utils/const");
 const { httpResponse } = require("../../../utils/response");
 
-
 module.exports = async (req, res, next) => {
   try {
-    const event = await Event.findById(req.params.id);
+    const event = await Event.findById(req.params.id).populate(
+      "participants",
+      "username email -_id"
+    );
     if (!event) {
       const error = transferError(
         STATUS_CODE.NOT_FOUND,

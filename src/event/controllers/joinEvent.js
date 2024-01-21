@@ -38,9 +38,13 @@ module.exports = async (req, res, next) => {
       return next(new Error(error));
     }
 
-    // Add the Participant to Event
+    // 1. Add the Participant to Event
     foundEvent.participants.push(participant._id);
     await foundEvent.save();
+
+    // Add the Event to the User's eventIds
+    participant.eventIds.push(eventId);
+    await participant.save();
 
     httpResponse(res, STATUS_CODE.CREATED, "success", {
       message: "Joined event successfully",
